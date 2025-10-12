@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.config.hardware.CachedMotor;
 public class Intake extends SubsysCore {
     CachedMotor im;
     Servo piv;
-    DigitalChannel pin0, pin1;
+    DigitalChannel pin0, pin1; // Purple, Green
     double pwr;
 
     public Intake(){

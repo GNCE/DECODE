@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.Robot;
 import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.utils.LoopTimer;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,6 +17,7 @@ import java.util.List;
 public class MyRobot extends Robot {
     HardwareMap h;
     JoinedTelemetry t;
+    Follower f;
 
     List<LynxModule> hubs;
     LoopTimer lt;
@@ -42,6 +44,7 @@ public class MyRobot extends Robot {
         resetCache();
     }
     public void endPeriodic(){
+        this.run();
         lt.end();
         t.addData("Loop Time (ms)", lt.getMs());
         t.addData("Loop Frequency (Hz)", lt.getHz());
