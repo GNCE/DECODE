@@ -6,6 +6,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.config.core.SubsysCore;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
@@ -16,6 +17,11 @@ public class Intake extends SubsysCore {
     Servo piv;
     DigitalChannel pin0, pin1; // Purple, Green
     double pwr;
+    public static double INTAKE_PIVOT_ZERO_OFFSET = 0;
+    public static double INTAKE_PIVOT_DOWN = 0;
+    public static double INTAKE_PIVOT_TRANSFER = 0.5;
+    public static long TRANSFER_ACTUATION_TIME_MS = 500;
+    boolean pivotUp = false;
 
     public enum IntakeMotorPowerStates {
         INTAKE, TRANSFER, REJECT, STOP
@@ -47,8 +53,17 @@ public class Intake extends SubsysCore {
         return Artifact.NONE;
     }
 
+    public Command setUpCommand(boolean state){
+        if(pivotUp == state) return new InstantCommand();
+        pivotUp = state;
+        return new WaitCommand(TRANSFER_ACTUATION_TIME_MS);
+    }
+
     @Override
     public void periodic() {
         im.setPower(pwr);
+        piv.setPosition(INTAKE_PIVOT_ZERO_OFFSET + (pivotUp?INTAKE_PIVOT_TRANSFER:INTAKE_PIVOT_DOWN));
+        t.addData("Intake Power", pwr);
+        t.addData("Intake Current", im.getCurrent());
     }
 }

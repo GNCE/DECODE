@@ -13,13 +13,13 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.config.core.SubsysCore;
-import org.firstinspires.ftc.teamcode.config.core.commandbase.DeferredCommand;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 public class Spindex extends SubsysCore {
     CRServo sp1, sp2;
@@ -54,6 +54,10 @@ public class Spindex extends SubsysCore {
         double pwr = spid.calculate(0, err);
         sp1.setPower(pwr);
         sp2.setPower(pwr);
+
+        t.addData("Storage", Arrays.stream(st).map(Artifact::name).collect(Collectors.joining(", ")));
+        t.addData("Current Index", idx);
+        t.addData("Selected Artifact", st[idx].name());
     }
 
     public boolean reachedTarget(){
