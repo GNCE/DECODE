@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
+@Configurable
 public class Spindex extends SubsysCore {
     CRServo sp1, sp2;
     AnalogInput spos;
@@ -28,7 +30,10 @@ public class Spindex extends SubsysCore {
     public static int idx;
     public static Artifact[] st = new Artifact[3];
     PIDController spid;
-    public static double kp = 0.5, ki = 0, kd = 0.05; // TODO: Edit
+    public static double kp = 0.0025, ki = 0.0005, kd = 0; // TODO: Edit
+    public static double el = 2; //error limit or deadzone range, e.g 5 would have 10 degrees of variace
+    public static double ZERO_OFFSET = 107;
+    public static double GEAR_RATIO = (double) 2;
 
     public Spindex(){
         sp1 = h.get(CRServo.class, "spin1");
@@ -37,6 +42,7 @@ public class Spindex extends SubsysCore {
         sp1.setDirection(DcMotorSimple.Direction.FORWARD);
         sp2.setDirection(DcMotorSimple.Direction.REVERSE);
         spid = new PIDController(kp, ki, kd);
+        emptyStorage();
     }
 
     public void emptyStorage(){
@@ -46,18 +52,31 @@ public class Spindex extends SubsysCore {
 
     @Override
     public void periodic() {
-        ca = spos.getVoltage()/3.3*360;
         spid.setPID(kp, ki, kd);
-        double err = idx*120 - ca;
+
+        ca = spos.getVoltage()/3.3*360;
+        double cur = (ca*GEAR_RATIO)%360;
+        double tar = (idx*120+ZERO_OFFSET)%360;
+        double err =  tar-cur;
         if(err > 180) err = err-360;
         else if(err < -180) err = err+360;
-        double pwr = spid.calculate(0, err);
-        sp1.setPower(pwr);
-        sp2.setPower(pwr);
+
+        double pwr = spid.calculate(0, -err);
+        if (Math.abs(err) > el) {
+            sp1.setPower(pwr);
+            sp2.setPower(pwr);
+        } else {
+            sp1.setPower(0);
+            sp2.setPower(0);
+        }
+
 
         t.addData("Storage", Arrays.stream(st).map(Artifact::name).collect(Collectors.joining(", ")));
         t.addData("Current Index", idx);
         t.addData("Selected Artifact", st[idx].name());
+        t.addData("SpindexerError", err);
+        t.addData("SpindexerPosition", cur);
+        t.addData("SpindexerPwr", pwr);
     }
 
     public boolean reachedTarget(){

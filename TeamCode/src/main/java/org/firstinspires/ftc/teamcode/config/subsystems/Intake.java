@@ -6,6 +6,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.config.core.SubsysCore;
@@ -42,11 +43,9 @@ public class Intake extends SubsysCore {
 
         this.setDefaultCommand(setPower(IntakeMotorPowerConfig.STOP));
     }
-
-    public Command setPower(double newPower){
-        return new InstantCommand(() -> pwr = newPower);
+    public Command setPower(double newPower) {
+        return new RunCommand(() -> pwr = newPower, this);
     }
-
     public Artifact getCurrentArtifact(){
         if(pin0.getState()) return Artifact.PURPLE;
         else if(pin1.getState()) return Artifact.GREEN;
