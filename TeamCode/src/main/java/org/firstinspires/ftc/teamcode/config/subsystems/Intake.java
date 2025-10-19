@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.config.subsystems;
 
 import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -53,9 +54,15 @@ public class Intake extends SubsysCore {
     }
 
     public Command setUpCommand(boolean state){
-        if(pivotUp == state) return new InstantCommand();
-        pivotUp = state;
-        return new WaitCommand(TRANSFER_ACTUATION_TIME_MS);
+        return new ConditionalCommand(
+                new WaitCommand(TRANSFER_ACTUATION_TIME_MS),
+                new InstantCommand(),
+                () -> {
+                    boolean changed = (pivotUp != state);
+                    pivotUp = state;
+                    return changed;
+                }
+        );
     }
 
     @Override

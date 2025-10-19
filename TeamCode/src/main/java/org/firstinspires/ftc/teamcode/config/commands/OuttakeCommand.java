@@ -21,13 +21,13 @@ public class OuttakeCommand extends SequentialCommandGroup {
         addCommands(
                 new InstantCommand(shooter::turnOn),
                 new ParallelCommandGroup(
-                        new DeferredCommand(() -> door.setOpenCommand(false), Collections.singletonList(door)),
-                        new DeferredCommand(() -> spindex.goToSlot(artifact), Collections.singletonList(spindex)),
+                        door.setOpenCommand(false),
+                        spindex.goToSlot(artifact),
                         new WaitUntilCommand(turret::reachedTarget),
                         new WaitUntilCommand(shooter::readyToShoot)
                 ),
-                new DeferredCommand(() -> intake.setUpCommand(true), Collections.singletonList(intake)),
-                new DeferredCommand(() -> intake.setUpCommand(false), Collections.singletonList(intake))
+                intake.setUpCommand(true),
+                intake.setUpCommand(false)
         );
         addRequirements(spindex, door, shooter, intake);
     }

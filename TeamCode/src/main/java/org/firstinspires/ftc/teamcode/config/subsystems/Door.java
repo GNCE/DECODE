@@ -32,10 +32,17 @@ public class Door extends SubsysCore {
 
     public void setOpen(boolean state){ open = state; }
 
+
     public Command setOpenCommand(boolean state){
-        if(open == state) return new InstantCommand();
-        open = state;
-        return new WaitCommand(ACTUATION_TIME_MS);
+        return new ConditionalCommand(
+                new WaitCommand(ACTUATION_TIME_MS),
+                new InstantCommand(),
+                () -> {
+                    boolean changed = (open != state);
+                    open = state;
+                    return changed;
+                }
+        );
     }
 
     @Override

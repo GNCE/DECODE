@@ -24,7 +24,7 @@ public class IntakeCommand extends SequentialCommandGroup {
         this.spindex = spindex;
         addCommands(
                 new ParallelCommandGroup(
-                        new DeferredCommand(() -> door.setOpenCommand(false), Collections.singletonList(door)),
+                        door.setOpenCommand(false),
                         spindex.goToSlot(Artifact.NONE)
                 ),
                 new InstantCommand(() -> intake.setPower(Intake.IntakeMotorPowerConfig.INTAKE)),
