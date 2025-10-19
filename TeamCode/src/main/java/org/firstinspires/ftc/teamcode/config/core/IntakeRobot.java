@@ -114,6 +114,7 @@ public class IntakeRobot extends Robot {
             if(intakeButton.getState()) intakeUntilFullCommand.schedule();
             else intakeUntilFullCommand.cancel();
         }
+        intakeButton.readValue();
     }
     public void endPeriodic(){
         this.run();
