@@ -6,6 +6,8 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RepeatCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
@@ -18,7 +20,7 @@ import java.util.Collections;
 public class IntakeUntilFullCommand extends RepeatCommand {
 
     public IntakeUntilFullCommand(Intake intake, Door door, Spindex spindex) {
-        super(new IntakeCommand(intake, door, spindex), spindex::isFull);
+        super(new SequentialCommandGroup(new IntakeCommand(intake, door, spindex), new WaitCommand(500)), spindex::isFull);
         addRequirements(intake, door, spindex);
     }
 }

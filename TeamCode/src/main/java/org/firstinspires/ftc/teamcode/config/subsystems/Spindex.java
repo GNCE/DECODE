@@ -39,8 +39,9 @@ public class Spindex extends SubsysCore {
     AnalogInput spos;
     public static int idx;
     public static Artifact[] st = new Artifact[3];
-    public static double MIN_POSITION_TOLERANCE = 2;
-    public static double ZERO_OFFSET = 10;
+    public static double MIN_POSITION_TOLERANCE = 10;
+    public static double ZERO_OFFSET = 20;
+    public static double ENCODER_OFFSET = -15.5;
     public static double GEAR_RATIO = (double) 2;
 
     public Spindex(){
@@ -69,13 +70,15 @@ public class Spindex extends SubsysCore {
         t.addData("Storage", Arrays.stream(st).map(Artifact::name).collect(Collectors.joining(", ")));
         t.addData("Current Index", idx);
         t.addData("Selected Artifact", st[idx%3].name());
+        t.addData("target", getTarget());
+        t.addData("current", getCurrent());
     }
 
     public double getTarget(){
         return idx*120+ZERO_OFFSET;
     }
     public double getCurrent(){
-        return spos.getVoltage()/3.3*360*GEAR_RATIO;
+        return spos.getVoltage()/3.3*360*GEAR_RATIO+ENCODER_OFFSET;
     }
     public double getTargetServoPosition(){
         return getTarget()/(355*GEAR_RATIO);

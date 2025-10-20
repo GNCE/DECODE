@@ -16,10 +16,7 @@ public class IntakeTest extends OpMode {
 
     @Override
     public void init_loop() {
-        r.startPeriodic();
-        r.allianceSelection();
-        r.preloadSelection();
-        r.endPeriodic();
+        r.init_loop();
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.seattlesolvers.solverslib.gamepad.ToggleButtonReader;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.commands.IntakeUntilFullCommand;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
+import org.firstinspires.ftc.teamcode.config.core.util.ToggleButton;
 import org.firstinspires.ftc.teamcode.config.subsystems.Door;
 import org.firstinspires.ftc.teamcode.config.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.config.subsystems.Lift;
@@ -47,7 +48,7 @@ public class IntakeRobot extends Robot {
 
     public static boolean isRed = true;
     ToggleButtonReader allianceSelectionButton;
-    ToggleButtonReader intakeButton;
+    ToggleButton intakeButton;
     IntakeUntilFullCommand intakeUntilFullCommand;
 
     int slotSelect = 0;
@@ -67,7 +68,7 @@ public class IntakeRobot extends Robot {
         this.door = new Door();
         this.spindex = new Spindex();
         this.allianceSelectionButton = new ToggleButtonReader(this.g1, GamepadKeys.Button.DPAD_UP);
-        this.intakeButton = new ToggleButtonReader(this.g1, GamepadKeys.Button.SQUARE);
+        this.intakeButton = new ToggleButton(false);
 
         register(intake, door, spindex);
 
@@ -95,6 +96,20 @@ public class IntakeRobot extends Robot {
         t.addData("Selected Artifact", Spindex.st[slotSelect].name());
     }
 
+    public void init_loop(){
+        lt.start();
+        resetCache();
+        allianceSelection();
+        preloadSelection();
+        allianceSelectionButton.readValue();
+        g1.readButtons();
+        g2.readButtons();
+        lt.end();
+        t.addData("Loop Time (ms)", lt.getMs());
+        t.addData("Loop Frequency (Hz)", lt.getHz());
+        t.update();
+    }
+
     public void stop(){
 
     }
@@ -110,14 +125,20 @@ public class IntakeRobot extends Robot {
         resetCache();
     }
     public void runIntakeTeleop(){
-        if(intakeButton.stateJustChanged()){
-            if(intakeButton.getState()) intakeUntilFullCommand.schedule();
+        if(intakeUntilFullCommand.isFinished()) intakeButton.setVal(false);
+        if(intakeButton.input(g1.getButton(GamepadKeys.Button.SQUARE))){
+            if(intakeButton.getVal()) intakeUntilFullCommand.schedule();
             else intakeUntilFullCommand.cancel();
         }
-        intakeButton.readValue();
+        t.addData("Intake Active", intakeButton.getVal());
+        t.addData("Intake Scheduled", intakeUntilFullCommand.isScheduled());
+        t.addData("IntakeCommand finished?", intakeUntilFullCommand.isFinished());
+        t.addData("Spindex full?", spindex.isFull());
     }
     public void endPeriodic(){
         this.run();
+        g1.readButtons();
+        g2.readButtons();
         lt.end();
         t.addData("Loop Time (ms)", lt.getMs());
         t.addData("Loop Frequency (Hz)", lt.getHz());

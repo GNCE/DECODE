@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 
@@ -25,7 +26,7 @@ public class Shooter extends SubsysCore {
         flywheel = new MotorGroup(new Motor(h, "shooter1", Motor.GoBILDA.BARE), new Motor(h, "shooter2", Motor.GoBILDA.BARE));
         flywheel.setRunMode(Motor.RunMode.VelocityControl);
         flywheel.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        setDefaultCommand(new InstantCommand(() -> vel=INACTIVE_VELOCITY));
+        setDefaultCommand(new RunCommand(() -> vel=INACTIVE_VELOCITY, this));
     }
 
     public void turnOn(){}

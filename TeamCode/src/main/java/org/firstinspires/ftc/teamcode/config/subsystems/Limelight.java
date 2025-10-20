@@ -23,6 +23,8 @@ public class Limelight extends SubsysCore {
         ll.pipelineSwitch(isRed ? 1 : 2);
     }
 
+
+
     public boolean isAprilTagDetected(){ return result!=null && result.isValid(); }
 
     @Override

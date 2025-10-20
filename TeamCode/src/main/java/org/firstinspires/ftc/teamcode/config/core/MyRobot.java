@@ -21,6 +21,7 @@ import com.seattlesolvers.solverslib.gamepad.ToggleButtonReader;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.core.util.Alliance;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
+import org.firstinspires.ftc.teamcode.config.core.util.Motif;
 import org.firstinspires.ftc.teamcode.config.subsystems.Door;
 import org.firstinspires.ftc.teamcode.config.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.config.subsystems.Lift;
@@ -49,6 +50,7 @@ public class MyRobot extends Robot {
     Shooter shooter;
     GamepadEx g1, g2;
     public static Pose autoEndPose;
+    public static Motif currentMotif;
 
     public static boolean isRed = true;
     ToggleButtonReader allianceSelectionButton;
