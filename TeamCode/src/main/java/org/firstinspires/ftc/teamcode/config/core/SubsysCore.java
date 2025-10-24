@@ -8,6 +8,10 @@ public class SubsysCore extends SubsystemBase {
     public static HardwareMap h;
     public static JoinedTelemetry t;
 
+    public SubsysCore(){
+        super();
+    }
+
     public static void setGlobalParameters(HardwareMap newH, JoinedTelemetry newT) {
         h = newH;
         t = newT;

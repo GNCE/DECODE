@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.config.core;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+@Deprecated // Deprecated for now. Todo
 public abstract class CustomOpMode extends OpMode {
     MyRobot r;
 

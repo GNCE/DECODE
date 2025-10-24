@@ -2,25 +2,26 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
 
 import org.firstinspires.ftc.teamcode.config.core.TestRobot;
 
 @TeleOp(name = "Robot Test OpMode", group = "System Test")
-public class RobotTest extends OpMode {
+public class RobotTest extends CommandOpMode {
     TestRobot r;
 
     @Override
-    public void init() {
+    public void initialize() {
         r = new TestRobot(hardwareMap, telemetry, gamepad1, gamepad2);
     }
 
     @Override
-    public void init_loop() {
+    public void initialize_loop() {
         r.init_loop();
     }
 
     @Override
-    public void loop() {
+    public void run() {
         r.startPeriodic();
         r.runIntakeTeleop();
         r.endPeriodic();
