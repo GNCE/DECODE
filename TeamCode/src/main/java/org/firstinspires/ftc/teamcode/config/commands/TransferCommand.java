@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config.commands;
 
+import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -15,7 +16,6 @@ import org.firstinspires.ftc.teamcode.config.subsystems.Spindex;
 import org.firstinspires.ftc.teamcode.config.subsystems.Turret;
 
 public class TransferCommand extends SequentialCommandGroup {
-
     public TransferCommand(ArtifactMatch artifact, Spindex spindex, Door door, Intake intake){
         addCommands(
                 intake.setPowerInstant(Intake.IntakeMotorPowerConfig.TRANSFER),

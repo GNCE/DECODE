@@ -86,6 +86,7 @@ public class Intake extends SubsysCore {
     public void periodic() {
         im.setPower(pwr);
         piv.setPosition(INTAKE_PIVOT_ZERO_OFFSET + (pivotUp?INTAKE_PIVOT_TRANSFER:INTAKE_PIVOT_DOWN));
+        t.addData("PivotUp", pivotUp);
         t.addData("Intake Power", pwr);
         t.addData("Intake Current", im.getCurrent());
         smoother.addReading(pin0.getState(), pin1.getState());

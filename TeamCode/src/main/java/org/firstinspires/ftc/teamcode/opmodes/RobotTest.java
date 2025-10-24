@@ -3,15 +3,15 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.config.core.IntakeRobot;
+import org.firstinspires.ftc.teamcode.config.core.TestRobot;
 
-@TeleOp(name = "Intake Test", group = "System Test")
-public class IntakeTest extends OpMode {
-    IntakeRobot r;
+@TeleOp(name = "Robot Test OpMode", group = "System Test")
+public class RobotTest extends OpMode {
+    TestRobot r;
 
     @Override
     public void init() {
-        r = new IntakeRobot(hardwareMap, telemetry, gamepad1, gamepad2);
+        r = new TestRobot(hardwareMap, telemetry, gamepad1, gamepad2);
     }
 
     @Override

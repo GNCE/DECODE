@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.Robot;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -15,6 +16,7 @@ import com.seattlesolvers.solverslib.gamepad.ToggleButtonReader;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.commands.IntakeUntilFullCommand;
+import org.firstinspires.ftc.teamcode.config.commands.TransferAllCommand;
 import org.firstinspires.ftc.teamcode.config.commands.TransferCommand;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
 import org.firstinspires.ftc.teamcode.config.core.util.ArtifactMatch;
@@ -26,13 +28,12 @@ import org.firstinspires.ftc.teamcode.config.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.config.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.config.subsystems.Spindex;
 import org.firstinspires.ftc.teamcode.config.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IntakeRobot extends Robot {
+public class TestRobot extends Robot {
     HardwareMap h;
     JoinedTelemetry t;
     Follower f;
@@ -52,10 +53,14 @@ public class IntakeRobot extends Robot {
     ToggleButtonReader allianceSelectionButton;
     ToggleButton intakeButton;
     IntakeUntilFullCommand intakeUntilFullCommand;
+    TransferCommand transferPurple, transferGreen;
+    TransferAllCommand transferAllCommand;
+    CommandScheduler scheduler = CommandScheduler.getInstance();
+
 
     int slotSelect = 0;
 
-    public IntakeRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
+    public TestRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
         this.h = h;
         this.t = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), t);
         hubs = this.h.getAll(LynxModule.class);
@@ -75,6 +80,10 @@ public class IntakeRobot extends Robot {
         register(intake, door, spindex);
         intake.setDefaultCommand(intake.setPowerCommand(Intake.IntakeMotorPowerConfig.STOP));
         intakeUntilFullCommand = new IntakeUntilFullCommand(intake, door, spindex);
+        transferPurple = new TransferCommand(ArtifactMatch.PURPLE, spindex, door, intake);
+        transferGreen = new TransferCommand(ArtifactMatch.GREEN, spindex, door, intake);
+        transferAllCommand = new TransferAllCommand(intake,spindex,door);
+
 
         this.lt = new LoopTimer();
     }
@@ -133,9 +142,13 @@ public class IntakeRobot extends Robot {
             else intakeUntilFullCommand.cancel();
         }
 
-        if(g1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) schedule(new TransferCommand(ArtifactMatch.PURPLE, spindex, door, intake));
-        else if(g1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) schedule(new TransferCommand(ArtifactMatch.GREEN, spindex, door, intake));
+        if (!scheduler.isScheduled(transferPurple)&& !scheduler.isScheduled(transferGreen) && !scheduler.isScheduled(transferAllCommand)) {
+            if (g1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) schedule(transferPurple);
+            else if (g1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) schedule(transferGreen);
+            if (g1.wasJustPressed(GamepadKeys.Button.TRIANGLE)) schedule(transferAllCommand);
+        }
 
+        t.addData("Can Transfer", (!scheduler.isScheduled(transferPurple)&& !scheduler.isScheduled(transferGreen) && !scheduler.isScheduled(transferAllCommand)));
         t.addData("Intake Active", intakeButton.getVal());
         t.addData("Intake Scheduled", intakeUntilFullCommand.isScheduled());
         t.addData("IntakeCommand finished?", intakeUntilFullCommand.isFinished());
