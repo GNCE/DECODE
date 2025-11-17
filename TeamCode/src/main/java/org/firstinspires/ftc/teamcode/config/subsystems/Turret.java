@@ -24,7 +24,7 @@ public class Turret extends SubsysCore {
     double turretDeg; // 0 is the position where the shooter is facing the back. This is NOT the actual turret angle.
     final double GEAR_RATIO = (double) 180 /50 * 20 / 90;
 
-    double previousServoAngle;
+    double previousServoAngle, currentServoAngle;
     double previousPower;
     int wrapCount;
     double err;
@@ -53,7 +53,7 @@ public class Turret extends SubsysCore {
 
 
     double getCurrentTurretAngle(){
-        return servoToTurretDegrees(wrapCount*360+e1.getCurrentPosition());
+        return servoToTurretDegrees(wrapCount*360+currentServoAngle);
     }
 
     double turretTargetDegFromPinpoint(){
@@ -65,10 +65,10 @@ public class Turret extends SubsysCore {
 
     @Override
     public void periodic() {
-
-        double currentServoAngle = e1.getCurrentPosition();
-        if(previousPower > 0 && previousServoAngle > 240 && currentServoAngle < 120) wrapCount++;
-        else if(previousPower < 0 && previousServoAngle < 120 && currentServoAngle > 240) wrapCount--;
+        currentServoAngle = e1.getCurrentPosition();
+        double deltaAngle = currentServoAngle - previousServoAngle;
+        if(deltaAngle < -180) wrapCount++;
+        else if (deltaAngle > 180) wrapCount--;
 
         pid.setPID(kp, ki, kd);
 
