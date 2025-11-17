@@ -12,7 +12,7 @@ public class MainTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        r = new MyRobot(hardwareMap, telemetry, gamepad1, gamepad2, OpModeType.TELEOP);
+        r = new MyRobot(hardwareMap, telemetry, gamepad1, gamepad2);
     }
 
     @Override

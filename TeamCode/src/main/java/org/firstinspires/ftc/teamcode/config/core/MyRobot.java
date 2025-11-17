@@ -10,7 +10,6 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.gamepad.ToggleButtonReader;
@@ -23,6 +22,7 @@ import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
 import org.firstinspires.ftc.teamcode.config.core.util.ArtifactMatch;
 import org.firstinspires.ftc.teamcode.config.core.util.Motif;
 import org.firstinspires.ftc.teamcode.config.core.util.OpModeType;
+import org.firstinspires.ftc.teamcode.config.core.util.SubsystemConfig;
 import org.firstinspires.ftc.teamcode.config.core.util.ToggleButton;
 import org.firstinspires.ftc.teamcode.config.subsystems.Door;
 import org.firstinspires.ftc.teamcode.config.subsystems.Intake;
@@ -60,47 +60,76 @@ public class MyRobot extends Robot {
     ToggleButtonReader allianceSelectionButton;
     ToggleButton intakeButton;
     IntakeUntilFullCommand intakeUntilFullCommand;
-
-
+    List<SubsystemConfig> subsysList;
+    boolean [] enabledSubsys = new boolean[SubsystemConfig.values().length];
     int slotSelect = 0;
 
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
+    public boolean hasSubsystem(SubsystemConfig subsystem){
+        return enabledSubsys[subsystem.ordinal()];
+    }
+
+    public boolean hasSubsystems(List<SubsystemConfig> subsystems){
+        for(SubsystemConfig subsystem: subsystems){
+            if(!hasSubsystem(subsystem)) return false;
+        }
+        return true;
+    }
+
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList, Pose startingPose, OpModeType opModeType){
+        this.opModeType = opModeType;
+        this.subsysList = subsysList;
+        for(SubsystemConfig subsystem: subsysList){
+            enabledSubsys[subsystem.ordinal()] = true;
+        }
+
         this.h = h;
         this.t = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), t);
         hubs = this.h.getAll(LynxModule.class);
         for(LynxModule hub: hubs){
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-        this.f = Constants.createFollower(this.h);
         this.g1 = new GamepadEx(g1);
         this.g2 = new GamepadEx(g2);
 
         SubsysCore.setGlobalParameters(this.h, this.t);
-        this.intake = new Intake();
-        this.ll = new Limelight(this.f, true);
 
-        this.turret = new Turret(this.f, this.ll, endTurretWrapCount, true);
-        this.shooter = new Shooter();
-        this.door = new Door();
-        this.lift = new Lift();
-        this.spindex = new Spindex();
+        if(hasSubsystem(SubsystemConfig.INTAKE)){
+            this.intake = new Intake();
+        }
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)){
+            this.f = Constants.createFollower(this.h);
+            this.f.setStartingPose(startingPose);
+            if(hasSubsystem(SubsystemConfig.LL)){
+                this.ll = new Limelight(this.f, true);
+                if(hasSubsystem(SubsystemConfig.TURRET)) turret = new Turret(this.f, this.ll, endTurretWrapCount, true);
+            }
+        }
+        if(hasSubsystem(SubsystemConfig.SHOOTER)) this.shooter = new Shooter();
+        if(hasSubsystem(SubsystemConfig.DOOR)) this.door = new Door();
+        if(hasSubsystem(SubsystemConfig.LIFT)) this.lift = new Lift();
+        if(hasSubsystem(SubsystemConfig.SPINDEX)) this.spindex = new Spindex();
+
+        if(this.opModeType == OpModeType.TELEOP){
+            if(hasSubsystems(Arrays.asList(SubsystemConfig.INTAKE, SubsystemConfig.DOOR, SubsystemConfig.SPINDEX))){
+                this.intakeButton = new ToggleButton(false);
+                this.intakeUntilFullCommand = new IntakeUntilFullCommand(intake, door, spindex);
+            }
+        }
+
         this.allianceSelectionButton = new ToggleButtonReader(this.g1, GamepadKeys.Button.DPAD_UP);
-
         this.lt = new LoopTimer();
     }
 
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, OpModeType opModeType){
-        this(h, t, g1, g2);
-        this.opModeType = opModeType;
-        this.intakeButton = new ToggleButton(false);
-        this.intakeUntilFullCommand = new IntakeUntilFullCommand(intake, door, spindex);
-        this.f.setStartingPose(autoEndPose == null ? new Pose(0, 0, 0) : autoEndPose);
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList){
+        this(h, t, g1, g2, subsysList, autoEndPose == null ? new Pose(0, 0, 0) : autoEndPose, OpModeType.TELEOP);
     }
 
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, OpModeType opModeType, Pose startingPose){
-        this(h, t, g1, g2);
-        this.opModeType = opModeType;
-        this.f.setStartingPose(startingPose);
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
+        this(h, t, g1, g2, Arrays.asList(SubsystemConfig.values()));
+    }
+
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, Pose startingPose){
+        this(h, t, g1, g2, Arrays.asList(SubsystemConfig.values()), startingPose, OpModeType.AUTO);
     }
 
     public void allianceSelection(){
@@ -125,13 +154,13 @@ public class MyRobot extends Robot {
         lt.start();
         resetCache();
         allianceSelection();
-        preloadSelection();
         allianceSelectionButton.readValue();
         g1.readButtons();
         g2.readButtons();
     }
 
     public void endInitLoop(){
+        if(opModeType == OpModeType.AUTO) this.run(); // TODO: Need to make sure that they are all paused, especially shooter.
         lt.end();
         t.addData("Loop Time (ms)", lt.getMs());
         t.addData("Loop Frequency (Hz)", lt.getHz());

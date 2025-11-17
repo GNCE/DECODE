@@ -15,8 +15,9 @@ public class BrushlandColorSensorConfiguration extends LinearOpMode {
         /* Using this example configuration, you can detect both artifact colors based on which pin is reading true:
             pin0 --> purple
             pin1 --> green */
-        crf.setPin0Digital(ColorRangefinder.DigitalMode.HSV, 0, 90); // purple
-        crf.setPin0DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 35); // 10mm or closer requirement
+        crf.setPin0Analog(ColorRangefinder.AnalogMode.HSV);
+//        crf.setPin0Digital(ColorRangefinder.DigitalMode.HSV, 0, 90); // purple
+//        crf.setPin0DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 35); // 10mm or closer requirement
         crf.setPin1Digital(ColorRangefinder.DigitalMode.HSV, 90, 127); // green
         crf.setPin1DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 35); // 10mm or closer requirement
         crf.setLedBrightness(100);
