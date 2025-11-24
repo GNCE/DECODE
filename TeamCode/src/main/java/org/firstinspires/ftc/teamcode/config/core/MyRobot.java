@@ -150,6 +150,11 @@ public class MyRobot extends Robot {
         t.addData("Selected Artifact", Spindex.st[slotSelect].name());
     }
 
+    public void driveControls(){
+        if(g1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0.8) f.setTeleOpDrive(-g1.getLeftY()*0.3, -g1.getLeftY()*0.3, -g1.getRightX()*0.3, true);
+        else f.setTeleOpDrive(-g1.getLeftY(), -g1.getLeftY(), -g1.getRightX(), true);
+    }
+
     public void startInitLoop(){
         lt.start();
         resetCache();
@@ -168,8 +173,8 @@ public class MyRobot extends Robot {
     }
 
     public void stop(){
-        autoEndPose = f.getPose();
-        endTurretWrapCount = turret.getWrapCount();
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)) autoEndPose = f.getPose();
+        if(hasSubsystem(SubsystemConfig.TURRET)) endTurretWrapCount = turret.getWrapCount();
     }
 
     public void resetCache(){
@@ -205,7 +210,7 @@ public class MyRobot extends Robot {
     }
     public void endPeriodic(){
         this.run();
-        f.update();
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)) f.update();
         g1.readButtons();
         g2.readButtons();
         lt.end();

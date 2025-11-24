@@ -1,0 +1,36 @@
+package org.firstinspires.ftc.teamcode.config.core;
+
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+
+public abstract class MyCommandOpMode extends CommandOpMode {
+    protected MyRobot r;
+
+    public void atStart(){}
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        initialize();
+
+        // run the scheduler
+        try {
+            while (opModeInInit()) {
+                r.startInitLoop();
+                initialize_loop();
+                r.endInitLoop();
+            }
+            atStart();
+            while (!isStopRequested() && opModeIsActive()) {
+                r.startPeriodic();
+                run();
+                r.endPeriodic();
+            }
+        } finally {
+            try {
+                r.stop();
+                end();
+            } finally {
+                reset();
+            }
+        }
+    }
+}

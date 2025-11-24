@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.teamcode.config.core.MyCommandOpMode;
 import org.firstinspires.ftc.teamcode.config.core.MyRobot;
+import org.firstinspires.ftc.teamcode.config.core.util.SubsystemConfig;
 
-@TeleOp(group="TeleOp", name="Main TeleOp")
-public class MainTeleOp extends MyCommandOpMode {
+import java.util.List;
+
+public class OuttakeTest extends MyCommandOpMode {
     @Override
     public void initialize() {
         r = new MyRobot(hardwareMap, telemetry, gamepad1, gamepad2);
@@ -18,11 +18,7 @@ public class MainTeleOp extends MyCommandOpMode {
     }
 
     @Override
-    public void atStart(){ r.f.startTeleopDrive(); }
-
-    @Override
     public void run() {
-        r.driveControls();
         r.runIntakeTeleop();
     }
 }
