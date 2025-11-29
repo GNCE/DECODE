@@ -20,7 +20,7 @@ public class TransferCommand extends SequentialCommandGroup {
         addCommands(
                 intake.setPowerInstant(Intake.IntakeMotorPowerConfig.TRANSFER),
                 new ParallelCommandGroup(
-                        door.setOpenCommand(false),
+                        door.setOpenCommand(true),
                         spindex.goToSlot(artifact)
                 ),
                 intake.setUpCommand(true),

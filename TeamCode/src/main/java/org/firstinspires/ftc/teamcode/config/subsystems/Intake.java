@@ -28,8 +28,8 @@ public class Intake extends SubsysCore {
     ArtifactDataSmoother smoother;
     double pwr;
     public static double INTAKE_PIVOT_ZERO_OFFSET = 0;
-    public static double INTAKE_PIVOT_DOWN = 0.95;
-    public static double INTAKE_PIVOT_TRANSFER = 0.717;
+    public static double INTAKE_PIVOT_DOWN = 0.98;
+    public static double INTAKE_PIVOT_TRANSFER = 0.74;
     public static long TRANSFER_ACTUATION_TIME_MS = 350;
     boolean pivotUp = false;
 
@@ -45,7 +45,7 @@ public class Intake extends SubsysCore {
 
     public Intake(){
         im = new CachedMotor(h.get(DcMotorEx.class, "intakeMotor"));
-        im.setDirection(DcMotorSimple.Direction.FORWARD);
+        im.setDirection(DcMotorSimple.Direction.REVERSE);
         piv = h.get(Servo.class, "intakePivot");
         pin0 = h.get(DigitalChannel.class, "digital0");
         pin1 = h.get(DigitalChannel.class, "digital1");

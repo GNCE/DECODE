@@ -16,6 +16,8 @@ import com.seattlesolvers.solverslib.gamepad.ToggleButtonReader;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.commands.IntakeUntilFullCommand;
+import org.firstinspires.ftc.teamcode.config.commands.OuttakeAllCommand;
+import org.firstinspires.ftc.teamcode.config.commands.OuttakeCommand;
 import org.firstinspires.ftc.teamcode.config.commands.TransferAllCommand;
 import org.firstinspires.ftc.teamcode.config.commands.TransferCommand;
 import org.firstinspires.ftc.teamcode.config.core.util.Artifact;
@@ -54,6 +56,7 @@ public class MyRobot extends Robot {
     public static Pose autoEndPose;
     public static Motif currentMotif;
     public static int endTurretWrapCount;
+    Pose goalPose;
     OpModeType opModeType;
 
     public static boolean isRed = true;
@@ -99,10 +102,11 @@ public class MyRobot extends Robot {
         if(hasSubsystem(SubsystemConfig.FOLLOWER)){
             this.f = Constants.createFollower(this.h);
             this.f.setStartingPose(startingPose);
+            this.f.update();
             if(hasSubsystem(SubsystemConfig.LL)){
                 this.ll = new Limelight(this.f, true);
-                if(hasSubsystem(SubsystemConfig.TURRET)) turret = new Turret(this.f, this.ll, endTurretWrapCount, true);
             }
+            if(hasSubsystem(SubsystemConfig.TURRET)) turret = new Turret(endTurretWrapCount);
         }
         if(hasSubsystem(SubsystemConfig.SHOOTER)) this.shooter = new Shooter();
         if(hasSubsystem(SubsystemConfig.DOOR)) this.door = new Door();
@@ -121,7 +125,7 @@ public class MyRobot extends Robot {
     }
 
     public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList){
-        this(h, t, g1, g2, subsysList, autoEndPose == null ? new Pose(0, 0, 0) : autoEndPose, OpModeType.TELEOP);
+        this(h, t, g1, g2, subsysList, autoEndPose == null ? new Pose(54.69, 6.74, Math.toRadians(180)) : autoEndPose, OpModeType.TELEOP);
     }
 
     public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
@@ -150,10 +154,17 @@ public class MyRobot extends Robot {
         t.addData("Selected Artifact", Spindex.st[slotSelect].name());
     }
 
-    public void driveControls(){
-        if(g1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0.8) f.setTeleOpDrive(-g1.getLeftY()*0.3, -g1.getLeftY()*0.3, -g1.getRightX()*0.3, true);
-        else f.setTeleOpDrive(-g1.getLeftY(), -g1.getLeftY(), -g1.getRightX(), true);
+    public void startDrive(){
+        f.startTeleopDrive();
+        f.update();
     }
+
+    public void driveControls(){
+        if(g1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0.8) f.setTeleOpDrive(g1.getLeftY()*0.3, -g1.getLeftX()*0.3, -g1.getRightX()*0.3, true);
+        else f.setTeleOpDrive(g1.getLeftY(), -g1.getLeftX(), -g1.getRightX(), true);
+    }
+
+    private final Pose blueGoalPose = new Pose(11.5, 138);
 
     public void startInitLoop(){
         lt.start();
@@ -162,10 +173,13 @@ public class MyRobot extends Robot {
         allianceSelectionButton.readValue();
         g1.readButtons();
         g2.readButtons();
+        if(!isRed) goalPose = blueGoalPose;
+        else goalPose = blueGoalPose.mirror();
     }
 
     public void endInitLoop(){
         if(opModeType == OpModeType.AUTO) this.run(); // TODO: Need to make sure that they are all paused, especially shooter.
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)) f.update();
         lt.end();
         t.addData("Loop Time (ms)", lt.getMs());
         t.addData("Loop Frequency (Hz)", lt.getHz());
@@ -186,6 +200,10 @@ public class MyRobot extends Robot {
     public void startPeriodic(){
         lt.start();
         resetCache();
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)){
+            if(hasSubsystem(SubsystemConfig.SHOOTER)) shooter.input(f.getPose(), goalPose);
+            if(hasSubsystem(SubsystemConfig.TURRET)) turret.input(f.getPose(), goalPose);
+        }
     }
     public void runIntakeTeleop(){
         if(intakeUntilFullCommand.isFinished()) intakeButton.setVal(false);
@@ -194,6 +212,12 @@ public class MyRobot extends Robot {
             else intakeUntilFullCommand.cancel();
         }
 
+        t.addData("Intake Active", intakeButton.getVal());
+        t.addData("Intake Scheduled", intakeUntilFullCommand.isScheduled());
+        t.addData("IntakeCommand finished?", intakeUntilFullCommand.isFinished());
+        t.addData("Spindex full?", spindex.isFull());
+    }
+    public void runTransferTeleop(){
         if (g1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)
                 && spindex.contains(Artifact.PURPLE))
             schedule(new TransferCommand(ArtifactMatch.PURPLE, spindex, door, intake));
@@ -202,15 +226,25 @@ public class MyRobot extends Robot {
             schedule(new TransferCommand(ArtifactMatch.GREEN, spindex, door, intake));
         if (g1.wasJustPressed(GamepadKeys.Button.TRIANGLE) && !spindex.isEmpty())
             schedule(new TransferAllCommand(intake, spindex, door));
+    }
 
-        t.addData("Intake Active", intakeButton.getVal());
-        t.addData("Intake Scheduled", intakeUntilFullCommand.isScheduled());
-        t.addData("IntakeCommand finished?", intakeUntilFullCommand.isFinished());
-        t.addData("Spindex full?", spindex.isFull());
+    public void runShootTeleop(){
+        if (g1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)
+                && spindex.contains(Artifact.PURPLE))
+            schedule(new OuttakeCommand(ArtifactMatch.PURPLE, intake, spindex, turret, shooter, door));
+        if (g1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)
+                && spindex.contains(Artifact.GREEN))
+            schedule(new OuttakeCommand(ArtifactMatch.GREEN, intake, spindex, turret, shooter, door));
+        if (g1.wasJustPressed(GamepadKeys.Button.TRIANGLE) && !spindex.isEmpty())
+            schedule(new OuttakeAllCommand(intake, spindex, turret, shooter, door));
     }
     public void endPeriodic(){
         this.run();
-        if(hasSubsystem(SubsystemConfig.FOLLOWER)) f.update();
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)) {
+            f.update();
+            t.addData("Current Pose", f.getPose());
+            t.addData("Current Velocity", f.getVelocity());
+        }
         g1.readButtons();
         g2.readButtons();
         lt.end();

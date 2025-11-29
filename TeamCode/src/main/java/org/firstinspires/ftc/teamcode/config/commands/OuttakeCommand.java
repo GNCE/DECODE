@@ -17,7 +17,8 @@ import java.util.function.Predicate;
 public class OuttakeCommand extends SequentialCommandGroup {
     public OuttakeCommand(ArtifactMatch artifactMatch, Intake intake, Spindex spindex,Turret turret, Shooter shooter, Door door){
         addCommands(
-                new InstantCommand(shooter::turnOn),
+                new InstantCommand(() -> shooter.setActive(true)),
+                intake.setPowerInstant(Intake.IntakeMotorPowerConfig.TRANSFER),
                 new ParallelCommandGroup(
                         door.setOpenCommand(false),
                         spindex.goToSlot(artifactMatch),
