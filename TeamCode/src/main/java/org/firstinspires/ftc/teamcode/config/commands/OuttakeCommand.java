@@ -20,7 +20,7 @@ public class OuttakeCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> shooter.setActive(true)),
                 intake.setPowerInstant(Intake.IntakeMotorPowerConfig.TRANSFER),
                 new ParallelCommandGroup(
-                        door.setOpenCommand(false),
+                        door.setOpenCommand(true),
                         spindex.goToSlot(artifactMatch),
                         new WaitUntilCommand(turret::reachedTarget),
                         new WaitUntilCommand(shooter::readyToShoot)

@@ -59,7 +59,8 @@ public class MyRobot extends Robot {
     Pose goalPose;
     OpModeType opModeType;
 
-    public static boolean isRed = true;
+    public static boolean isRed;
+    public static double TURRET_OFFSET_M = 0.08288647; // 82.88647 mm
     ToggleButtonReader allianceSelectionButton;
     ToggleButton intakeButton;
     IntakeUntilFullCommand intakeUntilFullCommand;
@@ -201,8 +202,12 @@ public class MyRobot extends Robot {
         lt.start();
         resetCache();
         if(hasSubsystem(SubsystemConfig.FOLLOWER)){
-            if(hasSubsystem(SubsystemConfig.SHOOTER)) shooter.input(f.getPose(), goalPose);
-            if(hasSubsystem(SubsystemConfig.TURRET)) turret.input(f.getPose(), goalPose);
+            Pose turretPose = new Pose(
+                    f.getPose().getX() + TURRET_OFFSET_M* Math.cos(f.getPose().getHeading()),
+                    f.getPose().getY() + TURRET_OFFSET_M* Math.sin(f.getPose().getHeading()),
+                    f.getPose().getHeading());
+            if(hasSubsystem(SubsystemConfig.SHOOTER)) shooter.input(turretPose, goalPose);
+            if(hasSubsystem(SubsystemConfig.TURRET)) turret.input(turretPose, goalPose);
         }
     }
     public void runIntakeTeleop(){

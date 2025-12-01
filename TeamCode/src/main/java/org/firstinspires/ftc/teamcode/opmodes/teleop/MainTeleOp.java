@@ -17,7 +17,7 @@ public class MainTeleOp extends MyCommandOpMode {
     public static double hoodAngle = 55;
     @Override
     public void initialize() {
-        r = new MyRobot(hardwareMap, telemetry, gamepad1, gamepad2, List.of(SubsystemConfig.INTAKE, SubsystemConfig.SPINDEX, SubsystemConfig.TURRET, SubsystemConfig.SHOOTER, SubsystemConfig.DOOR, SubsystemConfig.FOLLOWER));
+        r = new MyRobot(hardwareMap, telemetry, gamepad1, gamepad2, List.of(SubsystemConfig.LIFT, SubsystemConfig.INTAKE, SubsystemConfig.SPINDEX, SubsystemConfig.TURRET, SubsystemConfig.SHOOTER, SubsystemConfig.DOOR, SubsystemConfig.FOLLOWER));
     }
 
     @Override

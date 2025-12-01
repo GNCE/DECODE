@@ -16,10 +16,10 @@ public class BrushlandColorSensorConfiguration extends LinearOpMode {
             pin0 --> purple
             pin1 --> green */
         crf.setPin0Analog(ColorRangefinder.AnalogMode.HSV);
-//        crf.setPin0Digital(ColorRangefinder.DigitalMode.HSV, 0, 90); // purple
-//        crf.setPin0DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 35); // 10mm or closer requirement
-        crf.setPin1Digital(ColorRangefinder.DigitalMode.HSV, 90, 127); // green
-        crf.setPin1DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 35); // 10mm or closer requirement
+        crf.setPin0Digital(ColorRangefinder.DigitalMode.HSV, 160 / 360.0 * 255, 190 / 360.0 * 255); // purple
+        crf.setPin0DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 10); // 10mm or closer requirement
+        crf.setPin1Digital(ColorRangefinder.DigitalMode.HSV, 110 / 360.0 * 255, 140 / 360.0 * 255); // green
+        crf.setPin1DigitalMaxDistance(ColorRangefinder.DigitalMode.HSV, 10); // 10mm or closer requirement
         crf.setLedBrightness(100);
     }
 }

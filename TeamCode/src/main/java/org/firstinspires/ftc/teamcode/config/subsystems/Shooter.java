@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.teamcode.config.core.SubsysCore;
 import com.pedropathing.geometry.Pose;
+import com.seattlesolvers.solverslib.util.MathUtils;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -46,14 +47,14 @@ public class Shooter extends SubsysCore {
     public static double MAX_VELOCITY = 2760.0;
 
     // How close (in ticks/sec) must we be to call readyToShoot()
-    public static double VELOCITY_READY_THRESHOLD = 60.0;
+    public static double VELOCITY_READY_THRESHOLD = 80.0;
 
 
     // PID gains (live-tunable)
-    public static double kp = 5;
+    public static double kp = 0.5;
     public static double ki = 0.0;
     public static double kd = 0;
-    public static double kV = 0.35;
+    public static double kV = 0.08;
 
     // Last commanded target velocity (ticks/sec)
     private double currentTargetVelocity = 0.0;
@@ -64,7 +65,6 @@ public class Shooter extends SubsysCore {
     // ===========================
 
     // Horizontal offset: robot center → hood center, along robot forward (m)
-    public static double TURRET_OFFSET_M = 0.08288647; // 82.88647 mm
 
     // Launcher nominal height (ball center) (m)
     public static double LAUNCHER_HEIGHT_M = 0.26839625; // 268.39625 mm
@@ -74,7 +74,7 @@ public class Shooter extends SubsysCore {
     public static double MAX_HOOD_ANGLE_DEG = 55.0;
 
     // Servo positions at angle limits
-    public static double HOOD_MAX_SERVO_POS = 0.095;
+    public static double HOOD_MAX_SERVO_POS = 0.007;
     public static double HOOD_GEAR_RATIO =  (double)300/44;
     public static double HOOD_SERVO_RANGE = 355.0;
 
@@ -92,14 +92,14 @@ public class Shooter extends SubsysCore {
     // ===========================
 
     private final double[] distances = {
-            1.0, 2.0, 3.0
+            48.5, 91.4, 139.6
     };
     private final double[] velocities = {
-            2000.0, 2400.0, 2800.0
+            0.65, 0.8, 1
     };
 
     private final double[] hoodAngles = {
-            50.0, 45.0, 40.0
+            38, 48, 48
     };
 
     private final InterpLUT velocityLut = new InterpLUT();
@@ -117,7 +117,7 @@ public class Shooter extends SubsysCore {
 
     public Shooter() {
         Motor m1 = new Motor(h, "shooter1", Motor.GoBILDA.BARE), m2 = new Motor(h, "shooter2", Motor.GoBILDA.BARE);
-        m1.setInverted(true);
+        m2.setInverted(true);
         flywheel = new MotorGroup(m1, m2);
         flywheel.setRunMode(Motor.RunMode.VelocityControl);
         flywheel.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -145,13 +145,16 @@ public class Shooter extends SubsysCore {
         return active;
     }
 
+    public double getTargetVelocity(){
+        return -currentTargetVelocity*MAX_VELOCITY;
+    }
+
 
     /** Simple “on target” check in velocity units. */
     public boolean readyToShoot() {
         if (!active) return false;
 
-        double currentVelo = flywheel.getVelocity();
-        return Math.abs(currentVelo - currentTargetVelocity) < VELOCITY_READY_THRESHOLD;
+        return Math.abs(getTargetVelocity() - getVelocity()) < VELOCITY_READY_THRESHOLD;
     }
 
     /**
@@ -164,15 +167,8 @@ public class Shooter extends SubsysCore {
      */
 
     public void input(Pose robotPose, Pose goalPose) {
-        double xRobot = robotPose.getX();
-        double yRobot = robotPose.getY();
-        double heading = robotPose.getHeading(); // rad
-
-        double xHood = xRobot + TURRET_OFFSET_M * Math.cos(heading);
-        double yHood = yRobot + TURRET_OFFSET_M * Math.sin(heading);
-
-        double dx = goalPose.getX() - xHood;
-        double dy = goalPose.getY() - yHood;
+        double dx = goalPose.getX() - robotPose.getX();
+        double dy = goalPose.getY() - robotPose.getY();
 
         currentDistanceM = Math.hypot(dx, dy);
     }
@@ -204,7 +200,7 @@ public class Shooter extends SubsysCore {
         currentTargetHoodAngle = angle;
     }
 
-    public static boolean autoTarget = false;
+    public static boolean autoTarget = true;
 
     @Override
     public void periodic() {
@@ -215,11 +211,12 @@ public class Shooter extends SubsysCore {
         if (active) {
             if(autoTarget){
                 // 1) Lookup target velocity and angle from distance using LUTs
-                double lutVelocity   = velocityLut.get(currentDistanceM);
-                double lutHoodAngle  = hoodAngleLut.get(currentDistanceM);
+                double dist = MathUtils.clamp(currentDistanceM, distances[0], distances[distances.length-1]);
+                double lutVelocity   = velocityLut.get(dist);
+                double lutHoodAngle  = hoodAngleLut.get(dist);
 
                 // 2) Clamp velocity and enforce hood angle limits
-                currentTargetVelocity   = Range.clip(lutVelocity, 0.0, MAX_VELOCITY);
+                currentTargetVelocity   = Range.clip(lutVelocity, 0.0, 1.0);
                 currentTargetHoodAngle = Range.clip(lutHoodAngle, MIN_HOOD_ANGLE_DEG, MAX_HOOD_ANGLE_DEG);
             } else {
 
@@ -232,15 +229,16 @@ public class Shooter extends SubsysCore {
 
 
         // Command flywheel directly in ticks/sec
-        flywheel.set(currentTargetVelocity);
+        flywheel.set(-currentTargetVelocity);
 
         // Command hood servo
         double servoPos = hoodAngleToServoPos(currentTargetHoodAngle);
         hood.setPosition(servoPos);
 
-        t.addData("Shooter Velocity Error", currentTargetVelocity*MAX_VELOCITY - getVelocity());
+        t.addData("Shooter Velocity Error", getTargetVelocity() - getVelocity());
         t.addData("Shooter Distance (M)", currentDistanceM);
         t.addData("Shooter Velocity", getVelocity());
-        t.addData("Shooter Target Velocity", currentTargetVelocity);
+        t.addData("Shooter Target Velocity", getTargetVelocity());
+        t.addData("Shooter Ready", readyToShoot());
     }
 }

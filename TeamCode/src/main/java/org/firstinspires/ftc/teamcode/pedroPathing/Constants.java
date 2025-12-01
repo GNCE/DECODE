@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(15); // TODO: mass in kg
+            .mass(13.06); // TODO: mass in kg
 
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
