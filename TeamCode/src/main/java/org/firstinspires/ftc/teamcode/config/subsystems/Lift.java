@@ -12,8 +12,9 @@ public class Lift extends SubsysCore {
     DcMotorEx l;
     public static int tar = 0;
 
+
     public enum LiftPositions {
-        RETRACTED(0), EXTENDED(100);
+        RETRACTED(0), EXTENDED(11000);
 
         private final int ticks;
         LiftPositions(int ticks){
@@ -25,7 +26,6 @@ public class Lift extends SubsysCore {
         l = h.get(DcMotorEx.class, "liftMotor");
         l.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         l.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        l.setTargetPositionTolerance(20);
         setTargetPosition(LiftPositions.RETRACTED);
     }
 
@@ -36,8 +36,8 @@ public class Lift extends SubsysCore {
     @Override
     public void periodic() {
         l.setTargetPosition(tar);
-        if(tar == LiftPositions.EXTENDED.ticks) l.setPower(1);
-        else l.setPower(0);
+        if(Math.abs(tar - l.getCurrentPosition()) < 100) l.setPower(0);
+        else l.setPower(1);
         t.addData("Lift Current Position", l.getCurrentPosition());
         t.addData("Lift Velocity", l.getVelocity());
         t.addData("Lift Current Amps", l.getCurrent(CurrentUnit.AMPS));

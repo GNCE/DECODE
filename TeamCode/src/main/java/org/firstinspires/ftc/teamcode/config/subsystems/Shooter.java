@@ -44,17 +44,17 @@ public class Shooter extends SubsysCore {
     // Max allowed velocity (safety clamp)
     // 6000 rpm motor -> 6000/60 * 28 = 2800 ticks/sec.
     // We add +100 as a small headroom margin.
-    public static double MAX_VELOCITY = 2760.0;
+    public static double MAX_VELOCITY = 2930;
 
     // How close (in ticks/sec) must we be to call readyToShoot()
     public static double VELOCITY_READY_THRESHOLD = 80.0;
 
 
     // PID gains (live-tunable)
-    public static double kp = 0.5;
+    public static double kp = 0;
     public static double ki = 0.0;
     public static double kd = 0;
-    public static double kV = 0.08;
+    public static double kV = 1.15;
 
     // Last commanded target velocity (ticks/sec)
     private double currentTargetVelocity = 0.0;
@@ -211,7 +211,7 @@ public class Shooter extends SubsysCore {
         if (active) {
             if(autoTarget){
                 // 1) Lookup target velocity and angle from distance using LUTs
-                double dist = MathUtils.clamp(currentDistanceM, distances[0], distances[distances.length-1]);
+                double dist = MathUtils.clamp(currentDistanceM, distances[0]*1.01, distances[distances.length-1]*0.99);
                 double lutVelocity   = velocityLut.get(dist);
                 double lutHoodAngle  = hoodAngleLut.get(dist);
 

@@ -28,7 +28,7 @@ public class Intake extends SubsysCore {
     ArtifactDataSmoother smoother;
     double pwr;
     public static double INTAKE_PIVOT_ZERO_OFFSET = 0;
-    public static double INTAKE_PIVOT_DOWN = 0.96;
+    public static double INTAKE_PIVOT_DOWN = 0.95;
     public static double INTAKE_PIVOT_TRANSFER = 0.74;
     public static long TRANSFER_ACTUATION_TIME_MS = 350;
     boolean pivotUp = false;
@@ -38,9 +38,9 @@ public class Intake extends SubsysCore {
     }
     public static class IntakeMotorPowerConfig {
         public static double INTAKE = 1;
-        public static double TRANSFER = 1;
-        public static double STOP = 0.25;
-        public static double REJECT = -0.5;
+        public static double TRANSFER = 0.85;
+        public static double STOP = 0;
+        public static double REJECT = -0.85;
     }
 
     public Intake(){

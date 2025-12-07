@@ -14,7 +14,7 @@ public class SafeReverseCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> spindex.setSafetyMode(true)),
                 new WaitUntilCommand(spindex::reachedTarget),
                 intake.setPowerInstant(Intake.IntakeMotorPowerConfig.REJECT),
-                new WaitCommand(1500),
+                new WaitCommand(800),
                 new InstantCommand(() -> spindex.setSafetyMode(false)),
                 new WaitUntilCommand(spindex::reachedTarget)
         );

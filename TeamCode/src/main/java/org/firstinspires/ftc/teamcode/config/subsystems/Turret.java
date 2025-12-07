@@ -23,9 +23,9 @@ public class Turret extends SubsysCore {
     Follower f;
     Limelight ll;
     PIDController pid;
-    public static double kp = 0.006, ki = 0.08, kd = 0.0003;
-    public static double REACHED_TARGET_THRESHOLD = 5;
-    public static double ZERO_OFFSET = -225;
+    public static double kp = 0.005, ki = 0, kd = 0.0006, kF = 0.075;
+    public static double REACHED_TARGET_THRESHOLD = 2;
+    public static double ZERO_OFFSET = -337;
 
     double turretDeg; // 0 is the position where the shooter is facing the back. This is NOT the actual turret angle.
     final double GEAR_RATIO = (double) 180 /50 * 20 / 90;
@@ -95,7 +95,10 @@ public class Turret extends SubsysCore {
         targetTurret = MathUtils.clamp(targetTurret, -180, 180);
         err = targetTurret - getCurrentTurretAngle();
 
-        double pwr = MathUtils.clamp(pid.calculate(0, err), -1, 1);
+        double calc = pid.calculate(0, err);
+        if(err > 0) calc += kF;
+        else if(err < 0) calc -= kF;
+        double pwr = MathUtils.clamp(calc, -1, 1);
         s1.setPower(pwr);
         s2.setPower(pwr);
 
