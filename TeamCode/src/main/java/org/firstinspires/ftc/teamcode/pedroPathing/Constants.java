@@ -38,7 +38,7 @@ public class Constants {
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pp")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
