@@ -19,6 +19,7 @@ public abstract class MyCommandOpMode extends CommandOpMode {
                 r.endInitLoop();
             }
             atStart();
+            r.onStart();
             while (!isStopRequested() && opModeIsActive()) {
                 r.startPeriodic();
                 run();

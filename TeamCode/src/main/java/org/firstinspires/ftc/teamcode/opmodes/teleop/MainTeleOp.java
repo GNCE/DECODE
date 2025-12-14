@@ -26,9 +26,6 @@ public class MainTeleOp extends MyCommandOpMode {
     }
 
     @Override
-    public void atStart(){ r.startDrive(); }
-
-    @Override
     public void run() {
         r.driveControls();
         r.runIntakeTeleop();

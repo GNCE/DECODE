@@ -79,7 +79,7 @@ public class MyRobot extends Robot {
         return true;
     }
 
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList, Pose startingPose, OpModeType opModeType){
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList, OpModeType opModeType){
         this.opModeType = opModeType;
         this.subsysList = subsysList;
         for(SubsystemConfig subsystem: subsysList){
@@ -102,8 +102,6 @@ public class MyRobot extends Robot {
         }
         if(hasSubsystem(SubsystemConfig.FOLLOWER)){
             this.f = Constants.createFollower(this.h);
-            this.f.setStartingPose(startingPose);
-            this.f.update();
             if(hasSubsystem(SubsystemConfig.LL)){
                 this.ll = new Limelight(this.f, true);
             }
@@ -125,16 +123,13 @@ public class MyRobot extends Robot {
         this.lt = new LoopTimer();
     }
 
+    // new Pose(54.69, 6.74, Math.toRadians(180))
     public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, List<SubsystemConfig> subsysList){
-        this(h, t, g1, g2, subsysList, autoEndPose == null ? new Pose(54.69, 6.74, Math.toRadians(180)) : autoEndPose, OpModeType.TELEOP);
+        this(h, t, g1, g2, subsysList, OpModeType.TELEOP);
     }
 
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2){
-        this(h, t, g1, g2, Arrays.asList(SubsystemConfig.values()));
-    }
-
-    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, Pose startingPose){
-        this(h, t, g1, g2, Arrays.asList(SubsystemConfig.values()), startingPose, OpModeType.AUTO);
+    public MyRobot(HardwareMap h, Telemetry t, Gamepad g1, Gamepad g2, OpModeType opModeType){
+        this(h, t, g1, g2, Arrays.asList(SubsystemConfig.values()), opModeType);
     }
 
     public void allianceSelection(){
@@ -242,9 +237,9 @@ public class MyRobot extends Robot {
         if (g1.wasJustPressed(GamepadKeys.Button.TRIANGLE) && !spindex.isEmpty())
             schedule(new OuttakeAllCommand(intake, spindex, turret, shooter, door));
     }
-    public void endPeriodic(){
+    public void endPeriodic() {
         this.run();
-        if(hasSubsystem(SubsystemConfig.FOLLOWER)) {
+        if (hasSubsystem(SubsystemConfig.FOLLOWER)) {
             f.update();
             t.addData("Current Pose", f.getPose());
             t.addData("Current Velocity", f.getVelocity());
@@ -255,5 +250,18 @@ public class MyRobot extends Robot {
         t.addData("Loop Time (ms)", lt.getMs());
         t.addData("Loop Frequency (Hz)", lt.getHz());
         t.update();
+    }
+
+    public void overrideAutoEndPose(Pose newAutoEndPose){
+        autoEndPose = newAutoEndPose;
+    }
+
+    public void onStart(){
+        if(hasSubsystem(SubsystemConfig.FOLLOWER)){
+            if(autoEndPose == null) autoEndPose = new Pose(54.69, 6.74, Math.toRadians(180));
+            this.f.setStartingPose(autoEndPose);
+            this.f.update();
+            if(opModeType == OpModeType.TELEOP) this.startDrive();
+        }
     }
 }
