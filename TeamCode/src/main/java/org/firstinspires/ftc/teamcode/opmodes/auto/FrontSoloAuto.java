@@ -61,6 +61,7 @@ public class FrontSoloAuto extends MyCommandOpMode {
                                         )
                                 ),
                                 r.shootMotifSafe(),
+                                r.intake.setPowerInstant(0),
                                 new FollowPathCommand(r.f, autoPaths.getPath(AutoPaths.PathId.SHOOT_FRONT_TO_FRONT_SPIKE_START)),
                                 new WaitCommand(700),
                                 new ParallelCommandGroup(

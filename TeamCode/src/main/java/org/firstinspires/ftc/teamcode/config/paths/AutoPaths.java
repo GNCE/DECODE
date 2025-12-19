@@ -16,17 +16,17 @@ import java.util.EnumMap;
 public final class AutoPaths {
     // ====== POSES (BLUE ONLY) ======
     public enum PoseId {
-        START_FRONT (new Pose(21.8, 129.7, Math.toRadians(-128))),
+        START_FRONT (new Pose(28.081609, 132.511467, Math.toRadians(-127.879678))),
         START_BACK  (new Pose(54.69, 6.74, Math.toRadians(180))), // TODO
 
         SHOOT_FRONT (new Pose(40, 107, Math.toRadians(180))),
         SHOOT_BACK  (new Pose(54.69, 6.74, Math.toRadians(180))), // TODO
         GATE   (new Pose(19.4, 72.7, Math.toRadians(180))), // TODO: CHECK
 
-        FRONT_SPIKE_START (new Pose(42, 84, Math.toRadians(180))),
+        FRONT_SPIKE_START (new Pose(44, 84, Math.toRadians(180))),
         FRONT_SPIKE_1 (new Pose(37, 84, Math.toRadians(180))),
         FRONT_SPIKE_2 (new Pose(31.8, 84, Math.toRadians(180))),
-        FRONT_SPIKE_END   (new Pose(17.2, 84, Math.toRadians(180))),
+        FRONT_SPIKE_END   (new Pose(19, 84, Math.toRadians(180))),
         FRONT_SPIKE_END_TO_GATE_CONTROL (new Pose(32.1068090787717, 80.55540720961282)),
 
         MID_SPIKE_START   (new Pose(42, 58, Math.toRadians(180))),
@@ -52,6 +52,11 @@ public final class AutoPaths {
             return (a == Alliance.RED) ? blue.mirror() : blue;
         }
     }
+
+    /*
+    22.439522, 129.510988 -126.8238404
+    114.4188107, 122.0312788355069, -49.40561
+     */
 
     // ====== EVERY EDGE IS A PATH ======
     public enum PathId {

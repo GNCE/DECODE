@@ -20,9 +20,9 @@ public class Turret extends SubsysCore {
     Follower f;
     Limelight ll;
     PIDController pid;
-    public static double kp = 0.006, ki = 0, kd = 0.00006, kF = 0.09;
+    public static double kp = 0.007, ki = 0, kd = 0.00006, kF = 0.09;
     Pose motifPose = new Pose(72, 150);
-    public static double REACHED_TARGET_THRESHOLD = 0.7;
+    public static double REACHED_TARGET_THRESHOLD = 1;
     public static double ZERO_OFFSET = -85;
 
     double turretDeg; // 0 is the position where the shooter is facing the back. This is NOT the actual turret angle.

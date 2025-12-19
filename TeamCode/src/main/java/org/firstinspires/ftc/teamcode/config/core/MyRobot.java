@@ -172,7 +172,7 @@ public class MyRobot extends Robot {
         else f.setTeleOpDrive(g1.getLeftY(), -g1.getLeftX(), -g1.getRightX(), true);
     }
 
-    private final Pose blueGoalPose = new Pose(3, 142);
+    private final Pose blueGoalPose = new Pose(13, 131); // 141x141 x:1.5-142.5 y:0-141
 
     public void startInitLoop(){
         lt.start();
@@ -288,7 +288,7 @@ public class MyRobot extends Robot {
 
     public void onStart(){
         if(hasSubsystem(SubsystemConfig.FOLLOWER)){
-            if(autoEndPose == null) autoEndPose = new Pose(54, 6.74, Math.toRadians(180));
+            if(autoEndPose == null) autoEndPose = new Pose(78.6929, 6.742126, Math.toRadians(180));
             this.f.setStartingPose(autoEndPose);
             this.f.update();
             if(opModeType == OpModeType.TELEOP) this.startDrive();

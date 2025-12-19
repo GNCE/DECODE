@@ -43,8 +43,8 @@ public class Spindex extends SubsysCore {
     public static int idx;
     public static Artifact[] st = new Artifact[3];
     public static double MIN_POSITION_TOLERANCE = 15;
-    public static double ZERO_OFFSET = 106;
-    public static double ENCODER_OFFSET = -52;
+    public static double ZERO_OFFSET = 0;
+    public static double ENCODER_OFFSET = -51.5;
     public static double GEAR_RATIO = 1.8;
 
     public Spindex(){
