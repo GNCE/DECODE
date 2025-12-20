@@ -132,7 +132,7 @@ public class Turret extends SubsysCore {
         }
 
  */
-        targetTurret = MathUtils.clamp(targetTurret, -180, 180);
+        targetTurret = MathUtils.clamp(targetTurret, -170, 170);
         pidf.setSetPoint(targetTurret);
         err = targetTurret - getCurrentTurretAngle();
 

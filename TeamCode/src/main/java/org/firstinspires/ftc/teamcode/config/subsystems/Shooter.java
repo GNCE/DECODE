@@ -95,14 +95,14 @@ public class Shooter extends SubsysCore {
     // ===========================
 
     private final double[] distances = {
-            22.4, 43.2, 54.8, 66.3, 71.25, 85.67, 112.3, 118.1
+            22.4, 42.9, 57.425, 72.467, 85.67, 117.3, 130.3
     };
     private final double[] velocities = {
-            2050, 2100, 2250, 2260, 2300, 2500, 2725, 2725
+            2050, 2100, 2180, 2320, 2500, 2800, 2900
     };
 
     private final double[] hoodAngles = {
-            40, 49, 51, 51, 55, 55, 47, 46
+            40, 48, 53, 53, 55, 53, 50
     };
     PIDFController pidfController;
 

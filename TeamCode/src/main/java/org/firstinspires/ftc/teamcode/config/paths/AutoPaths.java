@@ -20,7 +20,7 @@ public final class AutoPaths {
         START_BACK  (new Pose(54.69, 6.74, Math.toRadians(180))), // TODO
 
         SHOOT_FRONT (new Pose(40, 107, Math.toRadians(180))),
-        SHOOT_BACK  (new Pose(54.69, 6.74, Math.toRadians(180))), // TODO
+        SHOOT_BACK  (new Pose(63.63684913217624, 24.224299065420563, Math.toRadians(180))),
         GATE   (new Pose(19.4, 72.7, Math.toRadians(180))), // TODO: CHECK
 
         FRONT_SPIKE_START (new Pose(44, 84, Math.toRadians(180))),
@@ -40,7 +40,13 @@ public final class AutoPaths {
         FAR_SPIKE_START   (new Pose(47, 36, Math.toRadians(180))),
         FAR_SPIKE_END     (new Pose(20, 36, Math.toRadians(180))),
 
-        FRONT_PARK (new Pose(55, 117, Math.toRadians(0)));
+        HUMAN_PLAYER_ZONE_1(new Pose(14.034712950600802, 18.64886515353805, Math.toRadians(180))),
+        HUMAN_PLAYER_ZONE_2(new Pose(14.034712950600802, 12.688918558077429, Math.toRadians(180))),
+
+        HUMAN_PLAYER_ZONE_END (new Pose(14.034712950600802, 7.882510013351133, Math.toRadians(180))),
+
+        FRONT_PARK (new Pose(55, 117, Math.toRadians(180))),
+        BACK_PARK (new Pose(61.90654205607476, 34.413885180240314, Math.toRadians(180)));
 
         private final Pose blue;
 
